@@ -13,14 +13,14 @@ import com.badlogic.gdx.utils.Logger;
 import net.lustenauer.obstacleavoid.ObstacleAvoidGame;
 import net.lustenauer.obstacleavoid.assets.AssetDescriptors;
 import net.lustenauer.obstacleavoid.assets.RegionNames;
-import net.lustenauer.obstacleavoid.screen.game._old.GameScreenOld;
+import net.lustenauer.obstacleavoid.screen.game.GameScreen;
 
 /**
  * Created by Patric Hollenstein on 13.01.18.
  *
  * @author Patric Hollenstein
  */
-public class MenuScreen extends net.lustenauer.obstacleavoid.screen.menu.MenuScreenBase {
+public class MenuScreen extends MenuScreenBase {
     /*
      * CONSTANTS
      */
@@ -102,17 +102,17 @@ public class MenuScreen extends net.lustenauer.obstacleavoid.screen.menu.MenuScr
 
     private void showOptions() {
         log.debug("showOptions");
-        game.setScreen(new net.lustenauer.obstacleavoid.screen.menu.OptionsScreen(game));
+        game.setScreen(new OptionsScreen(game));
     }
 
     private void showHighScore() {
         log.debug("showHighScore");
-        game.setScreen(new net.lustenauer.obstacleavoid.screen.menu.HeightScoreScreen(game));
+        game.setScreen(new HeightScoreScreen(game));
     }
 
     private void play() {
         log.debug("play");
-        game.setScreen(new GameScreenOld(game));
+        game.setScreen(new GameScreen(game));
     }
 
     private void quit() {

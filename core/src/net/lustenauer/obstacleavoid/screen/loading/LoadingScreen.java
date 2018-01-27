@@ -7,8 +7,10 @@ import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.utils.Logger;
 import com.badlogic.gdx.utils.viewport.FillViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
+import net.lustenauer.obstacleavoid.ObstacleAvoidGame;
 import net.lustenauer.obstacleavoid.assets.AssetDescriptors;
 import net.lustenauer.obstacleavoid.config.GameConfig;
+import net.lustenauer.obstacleavoid.screen.menu.MenuScreen;
 
 /**
  * Created by Patric Hollenstein on 12.01.18.
@@ -35,14 +37,14 @@ public class LoadingScreen extends ScreenAdapter {
     private float progress;
     private float waitTime = 0.75f;
 
-    private final net.lustenauer.obstacleavoid.ObstacleAvoidGame game;
+    private final ObstacleAvoidGame game;
     private final AssetManager assetManager;
     private boolean changeScreen;
 
     /*
      * CONSTRUCTORS
      */
-    public LoadingScreen(net.lustenauer.obstacleavoid.ObstacleAvoidGame game) {
+    public LoadingScreen(ObstacleAvoidGame game) {
         this.game = game;
         this.assetManager = game.getAssetManager();
     }
@@ -78,7 +80,7 @@ public class LoadingScreen extends ScreenAdapter {
         renderer.end();
 
         if (changeScreen) {
-            game.setScreen(new net.lustenauer.obstacleavoid.screen.menu.MenuScreen(game));
+            game.setScreen(new MenuScreen(game));
         }
     }
 

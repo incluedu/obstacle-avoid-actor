@@ -7,7 +7,11 @@ import com.badlogic.gdx.scenes.scene2d.ui.*;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.badlogic.gdx.utils.Logger;
+import net.lustenauer.obstacleavoid.ObstacleAvoidGame;
+import net.lustenauer.obstacleavoid.assets.AssetDescriptors;
+import net.lustenauer.obstacleavoid.assets.RegionNames;
 import net.lustenauer.obstacleavoid.common.GameManager;
+import net.lustenauer.obstacleavoid.config.DifficultyLevel;
 
 /**
  * Created by Patric Hollenstein on 14.01.18.
@@ -22,7 +26,7 @@ public class OptionsScreen extends MenuScreenBase {
     private CheckBox medium;
     private CheckBox hard;
 
-    public OptionsScreen(net.lustenauer.obstacleavoid.ObstacleAvoidGame game) {
+    public OptionsScreen(ObstacleAvoidGame game) {
         super(game);
     }
 
@@ -30,11 +34,11 @@ public class OptionsScreen extends MenuScreenBase {
         Table table = new Table();
         table.defaults().pad(15f);
 
-        TextureAtlas gamePlayAtlas = assetManager.get(net.lustenauer.obstacleavoid.assets.AssetDescriptors.GAME_PLAY);
-        Skin uiskin = assetManager.get(net.lustenauer.obstacleavoid.assets.AssetDescriptors.UI_SKIN);
-        net.lustenauer.obstacleavoid.config.DifficultyLevel difficultyLevel = GameManager.INSTANCE.getDifficultyLevel();
+        TextureAtlas gamePlayAtlas = assetManager.get(AssetDescriptors.GAME_PLAY);
+        Skin uiskin = assetManager.get(AssetDescriptors.UI_SKIN);
+        DifficultyLevel difficultyLevel = GameManager.INSTANCE.getDifficultyLevel();
 
-        TextureRegion backgroundRegion = gamePlayAtlas.findRegion(net.lustenauer.obstacleavoid.assets.RegionNames.BACKGROUND);
+        TextureRegion backgroundRegion = gamePlayAtlas.findRegion(RegionNames.BACKGROUND);
         table.setBackground(new TextureRegionDrawable(backgroundRegion));
 
         // label
@@ -48,13 +52,13 @@ public class OptionsScreen extends MenuScreenBase {
             }
         };
 
-        easy = checkBox(net.lustenauer.obstacleavoid.config.DifficultyLevel.EASY.name(), uiskin);
+        easy = checkBox(DifficultyLevel.EASY.name(), uiskin);
         easy.addListener(listener);
 
-        medium = checkBox(net.lustenauer.obstacleavoid.config.DifficultyLevel.MEDIUM.name(), uiskin);
+        medium = checkBox(DifficultyLevel.MEDIUM.name(), uiskin);
         medium.addListener(listener);
 
-        hard = checkBox(net.lustenauer.obstacleavoid.config.DifficultyLevel.HARD.name(), uiskin);
+        hard = checkBox(DifficultyLevel.HARD.name(), uiskin);
         hard.addListener(listener);
 
         checkBoxGroup = new ButtonGroup<CheckBox>(easy, medium, hard);
@@ -73,7 +77,7 @@ public class OptionsScreen extends MenuScreenBase {
         // setup tables
         Table contentTable = new Table(uiskin);
         contentTable.defaults().pad(10f);
-        contentTable.setBackground(net.lustenauer.obstacleavoid.assets.RegionNames.PANEL);
+        contentTable.setBackground(RegionNames.PANEL);
 
         contentTable.add(label).row();
         contentTable.add(easy).row();
@@ -102,13 +106,13 @@ public class OptionsScreen extends MenuScreenBase {
 
         if (checked == easy) {
             log.debug("easy");
-            GameManager.INSTANCE.updateDifficultyLevel(net.lustenauer.obstacleavoid.config.DifficultyLevel.EASY);
+            GameManager.INSTANCE.updateDifficultyLevel(DifficultyLevel.EASY);
         } else if (checked == hard) {
             log.debug("hard");
-            GameManager.INSTANCE.updateDifficultyLevel(net.lustenauer.obstacleavoid.config.DifficultyLevel.HARD);
+            GameManager.INSTANCE.updateDifficultyLevel(DifficultyLevel.HARD);
         } else {
             log.debug("medium");
-            GameManager.INSTANCE.updateDifficultyLevel(net.lustenauer.obstacleavoid.config.DifficultyLevel.MEDIUM);
+            GameManager.INSTANCE.updateDifficultyLevel(DifficultyLevel.MEDIUM);
         }
     }
 
