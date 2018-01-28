@@ -37,6 +37,10 @@ public class ActorBase extends Actor {
         collisionShape.setRadius(radius);
     }
 
+    public Circle getCollisionShape() {
+        return collisionShape;
+    }
+
     public void setRegion(TextureRegion region) {
         this.region = region;
     }
@@ -81,8 +85,8 @@ public class ActorBase extends Actor {
     }
 
     /*
-     * PRIVATE METHODES
-     */
+         * PRIVATE METHODES
+         */
     private void updateCollisionShape() {
         float halfWidth = getWidth() / 2f;
         float halfHeight = getHeight() / 2f;
