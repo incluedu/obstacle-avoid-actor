@@ -10,9 +10,13 @@ import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Disposable;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
+import net.lustenauer.obstacleavoid.assets.AssetDescriptors;
+import net.lustenauer.obstacleavoid.assets.RegionNames;
+import net.lustenauer.obstacleavoid.config.GameConfig;
 import net.lustenauer.obstacleavoid.entity._old.Background;
 import net.lustenauer.obstacleavoid.entity._old.Obstacle;
 import net.lustenauer.obstacleavoid.entity._old.Player;
+import net.lustenauer.obstacleavoid.util.debug.DebugCameraController;
 
 /**
  * Created by Patric Hollenstein on 07.01.18.
@@ -32,7 +36,7 @@ public class GameRendererOld implements Disposable {
 
     private BitmapFont font;
     private final GlyphLayout layout = new GlyphLayout();
-    private net.lustenauer.obstacleavoid.util.debug.DebugCameraController debugCameraController;
+    private DebugCameraController debugCameraController;
     private final GameControllerOld controller;
     private final AssetManager assetManager;
     private final SpriteBatch batch;
@@ -52,21 +56,21 @@ public class GameRendererOld implements Disposable {
     // == init ==
     private void init() {
         camera = new OrthographicCamera();
-        viewport = new FitViewport(net.lustenauer.obstacleavoid.config.GameConfig.WORLD_WIDTH, net.lustenauer.obstacleavoid.config.GameConfig.WORLD_HEIGHT, camera);
+        viewport = new FitViewport(GameConfig.WORLD_WIDTH, GameConfig.WORLD_HEIGHT, camera);
         renderer = new ShapeRenderer();
 
         hudCamera = new OrthographicCamera();
-        hudViewport = new FitViewport(net.lustenauer.obstacleavoid.config.GameConfig.HUD_WIDTH, net.lustenauer.obstacleavoid.config.GameConfig.HUD_HEIGHT, hudCamera);
-        font = assetManager.get(net.lustenauer.obstacleavoid.assets.AssetDescriptors.FONT);
+        hudViewport = new FitViewport(GameConfig.HUD_WIDTH, GameConfig.HUD_HEIGHT, hudCamera);
+        font = assetManager.get(AssetDescriptors.FONT);
 
         // create debug camera controller
-        debugCameraController = new net.lustenauer.obstacleavoid.util.debug.DebugCameraController();
-        debugCameraController.setStartPosition(net.lustenauer.obstacleavoid.config.GameConfig.WORLD_CENTER_X, net.lustenauer.obstacleavoid.config.GameConfig.WORLD_CENTER_Y);
+        debugCameraController = new DebugCameraController();
+        debugCameraController.setStartPosition(GameConfig.WORLD_CENTER_X, GameConfig.WORLD_CENTER_Y);
 
-        TextureAtlas gamePlayAtlas = assetManager.get(net.lustenauer.obstacleavoid.assets.AssetDescriptors.GAME_PLAY);
-        playerRegion = gamePlayAtlas.findRegion(net.lustenauer.obstacleavoid.assets.RegionNames.PLAYER);
-        obstacleRegion = gamePlayAtlas.findRegion(net.lustenauer.obstacleavoid.assets.RegionNames.OBSTACLE);
-        backgroundRegion = gamePlayAtlas.findRegion(net.lustenauer.obstacleavoid.assets.RegionNames.BACKGROUND);
+        TextureAtlas gamePlayAtlas = assetManager.get(AssetDescriptors.GAME_PLAY);
+        playerRegion = gamePlayAtlas.findRegion(RegionNames.PLAYER);
+        obstacleRegion = gamePlayAtlas.findRegion(RegionNames.OBSTACLE);
+        backgroundRegion = gamePlayAtlas.findRegion(RegionNames.BACKGROUND);
     }
 
     // == public methodes ==
@@ -80,7 +84,7 @@ public class GameRendererOld implements Disposable {
             Vector2 worldTouch = viewport.unproject(new Vector2(screenTouch));
 
             Player player = controller.getPlayer();
-            worldTouch.x = MathUtils.clamp(worldTouch.x, 0, net.lustenauer.obstacleavoid.config.GameConfig.WORLD_WIDTH - player.getWidth());
+            worldTouch.x = MathUtils.clamp(worldTouch.x, 0, GameConfig.WORLD_WIDTH - player.getWidth());
             player.setX(worldTouch.x);
         }
 
@@ -139,11 +143,11 @@ public class GameRendererOld implements Disposable {
 
         String livesText = "LIVES: " + controller.getLives();
         layout.setText(font, livesText);
-        font.draw(batch, livesText, 20, net.lustenauer.obstacleavoid.config.GameConfig.HUD_HEIGHT - layout.height);
+        font.draw(batch, livesText, 20, GameConfig.HUD_HEIGHT - layout.height);
 
         String scoreText = "SCORE: " + controller.getDisplayScore();
         layout.setText(font, scoreText);
-        font.draw(batch, scoreText, net.lustenauer.obstacleavoid.config.GameConfig.HUD_WIDTH - layout.width - 20, net.lustenauer.obstacleavoid.config.GameConfig.HUD_HEIGHT - layout.height);
+        font.draw(batch, scoreText, GameConfig.HUD_WIDTH - layout.width - 20, GameConfig.HUD_HEIGHT - layout.height);
 
         batch.end();
     }

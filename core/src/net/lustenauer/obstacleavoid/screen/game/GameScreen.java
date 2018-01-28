@@ -1,18 +1,22 @@
 package net.lustenauer.obstacleavoid.screen.game;
 
+import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Input;
 import com.badlogic.gdx.ScreenAdapter;
 import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.OrthographicCamera;
-import com.badlogic.gdx.graphics.g2d.BitmapFont;
-import com.badlogic.gdx.graphics.g2d.GlyphLayout;
-import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.graphics.g2d.*;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
+import com.badlogic.gdx.math.MathUtils;
+import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 import net.lustenauer.obstacleavoid.ObstacleAvoidGame;
 import net.lustenauer.obstacleavoid.assets.AssetDescriptors;
+import net.lustenauer.obstacleavoid.assets.RegionNames;
 import net.lustenauer.obstacleavoid.config.GameConfig;
+import net.lustenauer.obstacleavoid.entity.PlayerActor;
 import net.lustenauer.obstacleavoid.util.GdxUtils;
 import net.lustenauer.obstacleavoid.util.ViewportUtils;
 import net.lustenauer.obstacleavoid.util.debug.DebugCameraController;
@@ -40,6 +44,7 @@ public class GameScreen extends ScreenAdapter {
 
     private OrthographicCamera camera;
     private Viewport viewport;
+    private Stage stage;
     private ShapeRenderer renderer;
 
     private OrthographicCamera uiCamera;
@@ -58,6 +63,8 @@ public class GameScreen extends ScreenAdapter {
     private float startPlayerY = (GameConfig.PLAYER_SIZE / 2f);
 
     private DebugCameraController debugCameraController;
+
+    private PlayerActor player;
 
     /*
      * CONSTRUCTOR
@@ -78,6 +85,9 @@ public class GameScreen extends ScreenAdapter {
     public void show() {
         camera = new OrthographicCamera();
         viewport = new FitViewport(GameConfig.WORLD_WIDTH, GameConfig.WORLD_HEIGHT, camera);
+        stage = new Stage(viewport, batch);
+        stage.setDebugAll(true);
+
         renderer = new ShapeRenderer();
 
         uiCamera = new OrthographicCamera();
@@ -86,6 +96,14 @@ public class GameScreen extends ScreenAdapter {
 
         debugCameraController = new DebugCameraController();
         debugCameraController.setStartPosition(GameConfig.WORLD_CENTER_X, GameConfig.WORLD_CENTER_Y);
+
+        TextureAtlas gamePlayAtlas = assetManager.get(AssetDescriptors.GAME_PLAY);
+
+        player = new PlayerActor();
+        player.setPosition(startPlayerX,startPlayerY);
+        player.setRegion(gamePlayAtlas.findRegion(RegionNames.PLAYER));
+
+        stage.addActor(player);
     }
 
     @Override
@@ -127,6 +145,9 @@ public class GameScreen extends ScreenAdapter {
         batch.begin();
         drawGamePlay();
         batch.end();
+
+        stage.act();
+        stage.draw();
     }
 
     private void drawGamePlay() {
@@ -159,9 +180,12 @@ public class GameScreen extends ScreenAdapter {
 
 
         // draw grid
-        ViewportUtils.drawGrid(viewport,renderer);
+        ViewportUtils.drawGrid(viewport, renderer);
     }
 
     private void drawDebug() {
     }
+
+
+
 }

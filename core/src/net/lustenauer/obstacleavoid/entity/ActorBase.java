@@ -1,5 +1,6 @@
 package net.lustenauer.obstacleavoid.entity;
 
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
@@ -32,7 +33,7 @@ public class ActorBase extends Actor {
     /*
      * PUBLIC METHODES
      */
-    public void setCollisionShape(float radius) {
+    public void setCollisionRadius(float radius) {
         collisionShape.setRadius(radius);
     }
 
@@ -42,8 +43,8 @@ public class ActorBase extends Actor {
 
     @Override
     public void draw(Batch batch, float parentAlpha) {
-        if (region == null){
-            log.error("Region not set on Actor");
+        if (region == null) {
+            log.error("Region not set on Actor " + getClass().getName());
             return;
         }
 
@@ -61,8 +62,12 @@ public class ActorBase extends Actor {
         if (!getDebug()) {
             return;
         }
+        Color oldColor = shapeRenderer.getColor().cpy();
+        shapeRenderer.setColor(Color.RED);
         shapeRenderer.x(collisionShape.x, collisionShape.y, 0.1f);
-        shapeRenderer.circle(collisionShape.x, collisionShape.y, collisionShape.radius);
+        shapeRenderer.circle(collisionShape.x, collisionShape.y, collisionShape.radius, 30);
+
+        shapeRenderer.setColor(oldColor);
     }
 
     @Override
@@ -81,6 +86,6 @@ public class ActorBase extends Actor {
     private void updateCollisionShape() {
         float halfWidth = getWidth() / 2f;
         float halfHeight = getHeight() / 2f;
-        collisionShape.setPosition(getX() + halfWidth, getHeight() + halfHeight);
+        collisionShape.setPosition(getX() + halfWidth, getY() + halfHeight);
     }
 }
