@@ -10,6 +10,7 @@ import com.badlogic.gdx.graphics.g2d.*;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.scenes.scene2d.Stage;
+import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.Pool;
 import com.badlogic.gdx.utils.Pools;
@@ -70,6 +71,7 @@ public class GameScreen extends ScreenAdapter {
 
     private DebugCameraController debugCameraController;
     private TextureRegion obstacleRegion;
+    private TextureRegion backgroundRegion;
 
     private PlayerActor player;
     private final Array<ObstacleActor> obstacles = new Array<ObstacleActor>();
@@ -108,11 +110,16 @@ public class GameScreen extends ScreenAdapter {
 
         TextureAtlas gamePlayAtlas = assetManager.get(AssetDescriptors.GAME_PLAY);
         obstacleRegion = gamePlayAtlas.findRegion(RegionNames.OBSTACLE);
+        backgroundRegion = gamePlayAtlas.findRegion(RegionNames.BACKGROUND);
+
+        Image background = new Image(backgroundRegion);
+        background.setSize(GameConfig.WORLD_WIDTH,GameConfig.WORLD_HEIGHT);
 
         player = new PlayerActor();
         player.setPosition(startPlayerX, startPlayerY);
         player.setRegion(gamePlayAtlas.findRegion(RegionNames.PLAYER));
 
+        stage.addActor(background);
         stage.addActor(player);
     }
 
@@ -159,16 +166,10 @@ public class GameScreen extends ScreenAdapter {
 
     private void renderGamePlay() {
         batch.setProjectionMatrix(camera.combined);
-        batch.begin();
-        drawGamePlay();
-        batch.end();
-
         stage.act();
         stage.draw();
     }
 
-    private void drawGamePlay() {
-    }
 
     private void renderUi() {
         batch.setProjectionMatrix(uiCamera.combined);
