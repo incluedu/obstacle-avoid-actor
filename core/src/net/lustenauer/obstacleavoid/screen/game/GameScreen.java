@@ -1,7 +1,5 @@
 package net.lustenauer.obstacleavoid.screen.game;
 
-import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.Input;
 import com.badlogic.gdx.ScreenAdapter;
 import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.audio.Sound;
@@ -23,7 +21,7 @@ import net.lustenauer.obstacleavoid.common.GameManager;
 import net.lustenauer.obstacleavoid.config.GameConfig;
 import net.lustenauer.obstacleavoid.entity.ObstacleActor;
 import net.lustenauer.obstacleavoid.entity.PlayerActor;
-import net.lustenauer.obstacleavoid.entity._old.Obstacle;
+import net.lustenauer.obstacleavoid.screen.menu.MenuScreen;
 import net.lustenauer.obstacleavoid.util.GdxUtils;
 import net.lustenauer.obstacleavoid.util.ViewportUtils;
 import net.lustenauer.obstacleavoid.util.debug.DebugCameraController;
@@ -74,6 +72,7 @@ public class GameScreen extends ScreenAdapter {
     private TextureRegion backgroundRegion;
 
     private PlayerActor player;
+    private Image background;
     private final Array<ObstacleActor> obstacles = new Array<ObstacleActor>();
     private final Pool<ObstacleActor> obstaclePool = Pools.get(ObstacleActor.class);
 
@@ -108,12 +107,14 @@ public class GameScreen extends ScreenAdapter {
         debugCameraController = new DebugCameraController();
         debugCameraController.setStartPosition(GameConfig.WORLD_CENTER_X, GameConfig.WORLD_CENTER_Y);
 
+        hitSound = assetManager.get(AssetDescriptors.HIT_SOUND);
+
         TextureAtlas gamePlayAtlas = assetManager.get(AssetDescriptors.GAME_PLAY);
         obstacleRegion = gamePlayAtlas.findRegion(RegionNames.OBSTACLE);
         backgroundRegion = gamePlayAtlas.findRegion(RegionNames.BACKGROUND);
 
-        Image background = new Image(backgroundRegion);
-        background.setSize(GameConfig.WORLD_WIDTH,GameConfig.WORLD_HEIGHT);
+        background = new Image(backgroundRegion);
+        background.setSize(GameConfig.WORLD_WIDTH, GameConfig.WORLD_HEIGHT);
 
         player = new PlayerActor();
         player.setPosition(startPlayerX, startPlayerY);
@@ -143,6 +144,9 @@ public class GameScreen extends ScreenAdapter {
         viewport.apply();
         renderDebug();
 
+        if (isGameOver()){
+            game.setScreen(new MenuScreen(game));
+        }
     }
 
     @Override
@@ -156,12 +160,35 @@ public class GameScreen extends ScreenAdapter {
         renderer.dispose();
     }
 
+    public boolean isGameOver() {
+        return lives <= 0;
+    }
+
+
     /*
      * PRIVATE METHODES
      */
     private void update(float delta) {
+        if (isGameOver()){
+            return;
+        }
+
         createNewObstacle(delta);
         removePassedObstacles();
+
+        updateScore(delta);
+        updateDisplayScore(delta);
+
+        if (!isGameOver() && isPlayerCollidingWithObstacle()){
+            lives --;
+
+            if(isGameOver()){
+                GameManager.INSTANCE.updateHighScore(score);
+            } else {
+                restart();
+            }
+        }
+
     }
 
     private void renderGamePlay() {
@@ -190,20 +217,9 @@ public class GameScreen extends ScreenAdapter {
     }
 
     private void renderDebug() {
-        renderer.setProjectionMatrix(camera.combined);
-        renderer.begin(ShapeRenderer.ShapeType.Line);
-
-        drawDebug();
-
-        renderer.end();
-
-
-        // draw grid
         ViewportUtils.drawGrid(viewport, renderer);
     }
 
-    private void drawDebug() {
-    }
 
     private void createNewObstacle(float delta) {
         obstacleTimer += delta;
@@ -239,6 +255,53 @@ public class GameScreen extends ScreenAdapter {
                 obstaclePool.free(firstObstacle);
             }
         }
+    }
+
+    private void updateScore(float delta) {
+        scoreTimer += delta;
+
+        if (scoreTimer >= net.lustenauer.obstacleavoid.config.GameConfig.SCORE_MAX_TIME) {
+            score += MathUtils.random(1, 5);
+            scoreTimer = 0f;
+        }
+    }
+
+    private void updateDisplayScore(float delta) {
+        if (displayScore < score) {
+            displayScore = Math.min(score, displayScore + (int) (60 * delta));
+        }
+    }
+
+    private boolean isPlayerCollidingWithObstacle() {
+        for (ObstacleActor obstacle : obstacles) {
+            if (obstacle.isNotHit() && obstacle.isPlayerColliding(player)) {
+                hitSound.play();
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private void restart() {
+        for (int i = 0; i < obstacles.size; i++) {
+            ObstacleActor obstacle = obstacles.get(i);
+
+            // remove obstacle from stage
+            //obstacle.remove();
+
+            // return to pool
+            obstaclePool.free(obstacle);
+
+            // remove from the array
+            obstacles.removeIndex(i);
+        }
+
+        stage.clear();
+
+        stage.addActor(background);
+        stage.addActor(player);
+
+        player.setPosition(startPlayerX, startPlayerY);
     }
 
 

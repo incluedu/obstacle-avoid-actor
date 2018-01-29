@@ -4,7 +4,6 @@ import com.badlogic.gdx.math.Circle;
 import com.badlogic.gdx.math.Intersector;
 import com.badlogic.gdx.utils.Pool;
 import net.lustenauer.obstacleavoid.config.GameConfig;
-import net.lustenauer.obstacleavoid.entity._old.Player;
 
 /**
  * Created by Patric Hollenstein on 28.01.18.
@@ -54,10 +53,15 @@ public class ObstacleActor extends ActorBase implements Pool.Poolable {
         return overlaps;
     }
 
+    public boolean isNotHit(){
+        return !hit;
+    }
+
     @Override
     public void reset() {
         setRegion(null);
         hit = false;
+
     }
 
 }
